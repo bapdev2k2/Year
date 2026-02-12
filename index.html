@@ -240,6 +240,101 @@
     inset: 0;
     z-index: 2;
 }
+#start-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, #111 0%, #000 70%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    overflow: hidden;
+}
+
+/* ===== START BUTTON ===== */
+#start-btn {
+    padding: 22px 70px;
+    font-size: 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff2e88, #ff7b00);
+    color: white;
+    font-weight: bold;
+    letter-spacing: 3px;
+    box-shadow: 0 0 25px rgba(255, 46, 136, 0.7);
+    animation: pulseGlow 1.5s infinite ease-in-out;
+    transition: 0.3s;
+}
+
+#start-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Glow pulse */
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 20px rgba(255,46,136,0.6); }
+    50% { box-shadow: 0 0 50px rgba(255,46,136,1); }
+    100% { box-shadow: 0 0 20px rgba(255,46,136,0.6); }
+}
+
+/* ===== COUNTDOWN ===== */
+#countdown {
+    margin-top: 40px;
+    font-size: 120px;
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+/* Zoom effect */
+.count-animate {
+    animation: zoomPop 1s ease forwards;
+}
+
+@keyframes zoomPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+        text-shadow: 0 0 0px white;
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1.4);
+        text-shadow: 0 0 40px #fff;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+        text-shadow: 0 0 20px #ff2e88;
+    }
+}
+
+/* GO flash effect */
+.go-effect {
+    animation: goFlash 1s ease forwards;
+}
+
+@keyframes goFlash {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(2);
+        text-shadow: 0 0 80px #ffffff, 0 0 120px #ff2e88;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+
+
 
 		</style>
 		<meta name="msapplication-TileColor" content="#000000" />
@@ -251,6 +346,7 @@
 		<link rel="stylesheet" href="./css/style.css" />
 	</head>
 	<body>
+		
 		<!-- partial:index.partial.html -->
 		<!-- SVG Spritesheet -->
 		<div style="height: 0; width: 0; position: absolute; visibility: hidden">
@@ -390,8 +486,18 @@
 		<script src="./js/fscreen.js"></script>
 		<script src="./js/Stage.js"></script>
 		<script src="./js/MyMath.js"></script>
-		<script src="./js/script.js"></script>
-		<audio id="bg-music" src="./assets/music.mp3" preload="auto"></audio>
+		<!-- START SCREEN -->
+<div id="start-overlay">
+    <button id="start-btn">START</button>
+    <div id="countdown"></div>
+</div>
+
+<audio id="bgm" src="assets/music.mp3" preload="auto"></audio>
+
+<script src="js/script.js" defer></script>
+
+
+
 
 	</body>
 </html>

@@ -1,11 +1,18 @@
 
 
 "use strict";
+document.addEventListener("DOMContentLoaded", () => {
+  const sounds = document.querySelectorAll("audio");
+  sounds.forEach(a => a.muted = true);
+});
 
-// ===== BACKGROUND MUSIC =====
-const bgMusic = new Audio("assets/music.mp3");
-bgMusic.loop = true;      // lặp lại
-bgMusic.volume = 0.7;     // chỉnh âm lượng (0 → 1)
+
+const bgm = document.getElementById("bgm");
+
+window.addEventListener("click", () => {
+    bgm.muted = false;
+});
+
 
 
 const IS_MOBILE = window.innerWidth <= 640;
@@ -243,7 +250,7 @@ const store = {
 	state: {
 		// 将在init()中取消挂起
 		paused: true,
-		soundEnabled: true,
+		soundEnabled: false,
 		menuOpen: false,
 		openHelpTopic: null,
 		fullscreen: isFullscreen(),
@@ -958,13 +965,7 @@ function startWishesLoop() {
 	
 	wishesStarted = true;
 	wishesStopped = false; // Reset trạng thái dừng khi bắt đầu lại
-	// ===== PLAY BACKGROUND MUSIC AFTER COUNTDOWN =====
-const bgMusic = document.getElementById("bg-music");
-if (bgMusic && bgMusic.paused) {
-	bgMusic.volume = 0.6;
-	bgMusic.loop = true;
-	bgMusic.play().catch(() => {});
-}
+	
 
 
 	// Responsive: điều chỉnh timing và số lượng cho mobile
@@ -1052,25 +1053,7 @@ appNodes.scaleFactor.addEventListener("input", () => {
 // Nút giữa (âm thanh) đóng vai trò nút quà tặng:
 // - Lần ấn đầu: bắt đầu pháo tự động + bắt đầu lời chúc bay
 // - Những lần sau: bật/tắt âm thanh như bình thường
-let giftStarted = false;
-appNodes.soundBtn.addEventListener("click", () => {
-	if (!giftStarted) {
-		giftStarted = true;
-		// Bật pháo nếu đang tạm dừng
-		togglePause(false);
-		// Đảm bảo autoLaunch được bật
-		store.setState({
-			config: Object.assign({}, store.state.config, {
-				autoLaunch: true,
-			}),
-		});
-		configDidUpdate();
-		// Bắt đầu lời chúc bay
-		startWishesLoop();
-	} else {
-		toggleSound();
-	}
-});
+
 
 // Nút dừng câu chúc: dừng việc tạo câu chúc mới (các câu chúc đang bay sẽ tiếp tục hoàn thành)
 appNodes.stopWishesBtn.addEventListener("click", () => {
@@ -3311,4 +3294,70 @@ if (IS_HEADER) {
 			return Promise.reject(reason);
 		});
 	}, 0);
+	document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.getElementById("start-btn");
+    const countdownEl = document.getElementById("countdown");
+    const overlay = document.getElementById("start-overlay");
+    const bgm = document.getElementById("bgm");
+
+    startBtn.addEventListener("click", () => {
+    startBtn.style.display = "none";
+
+    let count = 3;
+
+    function showNumber(num) {
+        countdownEl.classList.remove("count-animate", "go-effect");
+        void countdownEl.offsetWidth; // reset animation
+
+        countdownEl.textContent = num;
+        countdownEl.classList.add("count-animate");
+    }
+
+    showNumber(count);
+
+    const timer = setInterval(() => {
+        count--;
+
+        if (count > 0) {
+            showNumber(count);
+        } else {
+            clearInterval(timer);
+
+            countdownEl.classList.remove("count-animate");
+            void countdownEl.offsetWidth;
+            countdownEl.textContent = "GO!";
+            countdownEl.classList.add("go-effect");
+
+            setTimeout(() => {
+                overlay.style.opacity = "0";
+                overlay.style.transition = "1s";
+
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                }, 1000);
+
+                // START FIREWORKS
+                store.setState({
+                    paused: false,
+                    soundEnabled: true,
+                    config: {
+                        ...store.state.config,
+                        autoLaunch: true
+                    }
+                });
+
+                configDidUpdate();
+                startWishesLoop();
+
+                bgm.volume = 0.7;
+                bgm.loop = true;
+                bgm.play().catch(() => {});
+
+            }, 1000);
+        }
+    }, 1000);
+});
+
+});
+
 }
